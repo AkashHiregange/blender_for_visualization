@@ -14,9 +14,6 @@ import ase
 print(ase.__version__)
 
 atoms = read("interface_Co3O4_TiO2_unoptimized.xyz")  # change file if needed
-positions = atoms.get_positions()
-symbols = atoms.get_chemical_symbols()
-cell = atoms.cell
 
 default_colors = {
     "H":  (1.0, 1.0, 1.0),
@@ -92,29 +89,37 @@ scale_dict = {
     "Ti": 1.320,
 }
 
+def create_structure_in_viewport(atoms):
+    positions = atoms.get_positions()
+    symbols = atoms.get_chemical_symbols()
+    cell = atoms.cell
 
-base_radius = 0.9
-base = make_base_sphere(0.5, (0,0,0))
-for i, (pos, sym, alpha) in enumerate(zip(positions, symbols)):
-    radius = vdw_radii[sym]
-    # scale = scale_dict[sym]
-    obj = base.copy()
-    obj.data = base.data.copy()
-    bpy.context.collection.objects.link(obj)
+    base_radius = 0.9
+    base = make_base_sphere(0.5, (0,0,0))
+    atom_objects = []
+    for i, (pos, sym, alpha) in enumerate(zip(positions, symbols)):
+        radius = vdw_radii[sym]
+        # scale = scale_dict[sym]
+        obj = base.copy()
+        obj.data = base.data.copy()
+        bpy.context.collection.objects.link(obj)
 
-    obj.location = pos
-    scale = radius / base_radius
-    obj.scale = (scale, scale, scale)
-    #obj.radius = radius
-    obj.name = f"Atom_{i}_{sym}"
+        obj.location = pos
+        scale = radius / base_radius
+        obj.scale = (scale, scale, scale)
+        #obj.radius = radius
+        obj.name = f"Atom_{i}_{sym}"
 
-    color = get_color(sym)
-    mat = make_material(color)
-    obj.data.materials.append(mat)
+        color = get_color(sym)
+        mat = make_material(color)
+        obj.data.materials.append(mat)
 
-# Hide the base sphere
-base.hide_viewport = True
-base.hide_render = True
+        atom_objects.append(obj)
+
+    # Hide the base sphere
+    base.hide_viewport = True
+    base.hide_render = True
+    return atom_objects
 
 # lets create a cell for the structure (if it has one!!)
 # the idea is to give the vectors that form the corners of the box and then
