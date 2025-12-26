@@ -15,8 +15,8 @@ print(ase.__version__)
 
 atoms = read("interface_Co3O4_TiO2_unoptimized.xyz")  # change file if needed
 positions = atoms.get_positions()
-symbols   = atoms.get_chemical_symbols()
-cell      = atoms.cell
+symbols = atoms.get_chemical_symbols()
+cell = atoms.cell
 
 default_colors = {
     "H":  (1.0, 1.0, 1.0),
@@ -31,4 +31,7 @@ default_colors = {
 
 def get_color(sym):
     return default_colors.get(sym, (0.6, 0.6, 0.6))
+
+bpy.ops.object.select_all(action='SELECT')
+bpy.ops.object.delete()
 
