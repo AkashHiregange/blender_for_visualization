@@ -70,6 +70,8 @@ def make_material(base_color):
     # I think this is necessary because BSDF tells how the material should behave in
     # presence of light. But, the OutputMaterial helps with actual rendering.
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+    # assigns the same color in viewport and hence no need to go into render mode everytime.
     mat.diffuse_color = (*base_color, 1)
 
     # in case there are transparent atoms
@@ -91,17 +93,17 @@ scale_dict = {
 }
 
 
-base_radius = 0.5
+base_radius = 0.9
 base = make_base_sphere(0.5, (0,0,0))
 for i, (pos, sym, alpha) in enumerate(zip(positions, symbols)):
     radius = vdw_radii[sym]
-    scale = scale_dict[sym]
+    # scale = scale_dict[sym]
     obj = base.copy()
     obj.data = base.data.copy()
     bpy.context.collection.objects.link(obj)
 
     obj.location = pos
-    # scale = radius / base_radius
+    scale = radius / base_radius
     obj.scale = (scale, scale, scale)
     #obj.radius = radius
     obj.name = f"Atom_{i}_{sym}"
@@ -115,7 +117,7 @@ base.hide_viewport = True
 base.hide_render = True
 
 # lets create a cell for the structure (if it has one!!)
-# the idea is give the vectors that form the corners of the box and then
+# the idea is to give the vectors that form the corners of the box and then
 # connect the corners using edges (this could be used universally to create a box.
 
 corners = [
