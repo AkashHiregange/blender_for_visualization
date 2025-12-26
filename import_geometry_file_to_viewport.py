@@ -41,3 +41,38 @@ def make_base_sphere(radius, location):
     bpy.ops.object.shade_smooth()
     return base
 
+def make_material(base_color, alpha):
+    mat = bpy.data.materials.new("AtomMat")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+
+    # clears any residues and leads to fresh nodes. Nodes important for the color of the material.
+    for n in nodes:
+        nodes.remove(n)
+
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+
+    # BSDF, or Bidirectional Scattering Distribution Function,
+    # describes how light scatters (reflects and transmits) off a
+    # surface from all incoming angles to all outgoing angles, essentially
+    # defining a material's appearance.
+
+    # not sure how this affects the scene. Took this from one of the codes in a gitHub project.
+    bsdf.location = (0, 0)
+    out.location = (300, 0)
+
+    # Set color
+    bsdf.inputs["Base Color"].default_value = (*base_color, 1.0)
+
+    # this basically creates a link from the output of the bsdf to input of OutputMaterial
+    # I think this is necessary because BSDF tells how the material should behave in
+    # presence of light. But, the OutputMaterial helps with actual rendering.
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    mat.diffuse_color = (*base_color, 1)
+
+    # in case there are transparent atoms
+    mat.blend_method = 'BLEND'
+    return mat
+
