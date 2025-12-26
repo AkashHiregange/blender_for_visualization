@@ -113,3 +113,34 @@ for i, (pos, sym, alpha) in enumerate(zip(positions, symbols)):
 # Hide the base sphere
 base.hide_viewport = True
 base.hide_render = True
+
+# lets create a cell for the structure (if it has one!!)
+# the idea is give the vectors that form the corners of the box and then
+# connect the corners using edges (this could be used universally to create a box.
+
+corners = [
+    Vector([0, 0, 0]),
+    Vector(cell[0]),
+    Vector(cell[1]),
+    Vector(cell[2]),
+    Vector(cell[0] + cell[1]),
+    Vector(cell[0] + cell[2]),
+    Vector(cell[1] + cell[2]),
+    Vector(cell[0] + cell[1] + cell[2])
+]
+
+edges = [
+    (0,1),(0,2),(0,3),
+    (1,4),(1,5),
+    (2,4),(2,6),
+    (3,5),(3,6),
+    (4,7),(5,7),(6,7)
+]
+
+mesh = bpy.data.meshes.new("CellBox") # "CellBox" is not arbitrary and blender looks for this keyword
+mesh.from_pydata(corners, edges, [])
+cell_obj = bpy.data.objects.new("CellBox", mesh)
+bpy.context.collection.objects.link(cell_obj)
+
+cell_obj.display_type = 'WIRE'
+cell_obj.show_wire = True
