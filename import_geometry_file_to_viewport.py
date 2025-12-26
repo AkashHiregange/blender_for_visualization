@@ -35,3 +35,9 @@ def get_color(sym):
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete()
 
+def make_base_sphere(radius, location):
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
+    base = bpy.context.active_object
+    bpy.ops.object.shade_smooth()
+    return base
+
