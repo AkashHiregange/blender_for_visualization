@@ -89,11 +89,10 @@ scale_dict = {
     "Ti": 1.320,
 }
 
-def create_structure_in_viewport(atoms):
+def create_structure_in_viewport(atoms, render_cell=False):
     positions = atoms.get_positions()
     symbols = atoms.get_chemical_symbols()
     cell = atoms.cell
-
     base_radius = 0.9
     base = make_base_sphere(0.5, (0,0,0))
     atom_objects = []
@@ -116,7 +115,10 @@ def create_structure_in_viewport(atoms):
 
         atom_objects.append(obj)
 
-    # Hide the base sphere
+    if render_cell:
+        make_cell(cell=cell)
+
+    # Hide the base sphere as it is not necessary to view it
     base.hide_viewport = True
     base.hide_render = True
     return atom_objects
@@ -125,29 +127,32 @@ def create_structure_in_viewport(atoms):
 # the idea is to give the vectors that form the corners of the box and then
 # connect the corners using edges (this could be used universally to create a box.
 
-corners = [
-    Vector([0, 0, 0]),
-    Vector(cell[0]),
-    Vector(cell[1]),
-    Vector(cell[2]),
-    Vector(cell[0] + cell[1]),
-    Vector(cell[0] + cell[2]),
-    Vector(cell[1] + cell[2]),
-    Vector(cell[0] + cell[1] + cell[2])
-]
+def make_cell(cell):
+    corners = [
+        Vector([0, 0, 0]),
+        Vector(cell[0]),
+        Vector(cell[1]),
+        Vector(cell[2]),
+        Vector(cell[0] + cell[1]),
+        Vector(cell[0] + cell[2]),
+        Vector(cell[1] + cell[2]),
+        Vector(cell[0] + cell[1] + cell[2])
+    ]
 
-edges = [
-    (0,1),(0,2),(0,3),
-    (1,4),(1,5),
-    (2,4),(2,6),
-    (3,5),(3,6),
-    (4,7),(5,7),(6,7)
-]
+    edges = [
+        (0,1),(0,2),(0,3),
+        (1,4),(1,5),
+        (2,4),(2,6),
+        (3,5),(3,6),
+        (4,7),(5,7),(6,7)
+    ]
 
-mesh = bpy.data.meshes.new("CellBox") # "CellBox" is not arbitrary and blender looks for this keyword
-mesh.from_pydata(corners, edges, [])
-cell_obj = bpy.data.objects.new("CellBox", mesh)
-bpy.context.collection.objects.link(cell_obj)
+    mesh = bpy.data.meshes.new("CellBox") # "CellBox" is not arbitrary and blender looks for this keyword
+    mesh.from_pydata(corners, edges, [])
+    cell_obj = bpy.data.objects.new("CellBox", mesh)
+    bpy.context.collection.objects.link(cell_obj)
 
-cell_obj.display_type = 'WIRE'
-cell_obj.show_wire = True
+    cell_obj.display_type = 'WIRE'
+    cell_obj.show_wire = True
+
+    return cell_obj
