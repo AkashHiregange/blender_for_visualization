@@ -76,3 +76,40 @@ def make_material(base_color, alpha):
     mat.blend_method = 'BLEND'
     return mat
 
+vdw_radii = {
+    "O":  1.52,
+    "F":  1.47,
+    "Co": 2.00,
+    "Ti": 2.15,
+}
+
+scale_dict = {
+    "O":  0.650,
+    "F":  0.650,
+    "Co": 1.160,
+    "Ti": 1.320,
+}
+
+
+base_radius = 0.5
+base = make_base_sphere(0.5, (0,0,0))
+for i, (pos, sym, alpha) in enumerate(zip(positions, symbols, transp)):
+    radius = vdw_radii[sym]
+    scale = scale_dict[sym]
+    obj = base.copy()
+    obj.data = base.data.copy()
+    bpy.context.collection.objects.link(obj)
+
+    obj.location = pos
+    # scale = radius / base_radius
+    obj.scale = (scale, scale, scale)
+    #obj.radius = radius
+    obj.name = f"Atom_{i}_{sym}"
+
+    color = get_color(sym)
+    mat = make_material(color, alpha)
+    obj.data.materials.append(mat)
+
+# Hide the base sphere
+base.hide_viewport = True
+base.hide_render = True
