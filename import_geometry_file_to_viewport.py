@@ -41,7 +41,7 @@ def make_base_sphere(radius, location):
     bpy.ops.object.shade_smooth()
     return base
 
-def make_material(base_color, alpha):
+def make_material(base_color):
     mat = bpy.data.materials.new("AtomMat")
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
@@ -93,7 +93,7 @@ scale_dict = {
 
 base_radius = 0.5
 base = make_base_sphere(0.5, (0,0,0))
-for i, (pos, sym, alpha) in enumerate(zip(positions, symbols, transp)):
+for i, (pos, sym, alpha) in enumerate(zip(positions, symbols)):
     radius = vdw_radii[sym]
     scale = scale_dict[sym]
     obj = base.copy()
@@ -107,7 +107,7 @@ for i, (pos, sym, alpha) in enumerate(zip(positions, symbols, transp)):
     obj.name = f"Atom_{i}_{sym}"
 
     color = get_color(sym)
-    mat = make_material(color, alpha)
+    mat = make_material(color)
     obj.data.materials.append(mat)
 
 # Hide the base sphere
